@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from app.db import create_db_and_tables
 from app.logging_config import get_logger, setup_logging
-from app.routers import hero_router
+from app.routers import deepseek_router, hero_router
 
 # Initialize logging and create logger for this module
 setup_logging()
@@ -12,6 +12,7 @@ app = FastAPI()
 logger.info("API is ready.")
 
 app.include_router(hero_router.router)
+app.include_router(deepseek_router.router)
 
 
 @app.on_event("startup")

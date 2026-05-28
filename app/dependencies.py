@@ -5,6 +5,7 @@ from sqlmodel import Session
 
 from app.db import engine
 from app.repositories.hero_repository import HeroRepository
+from app.services.deepseek_service import DeepSeekService
 from app.services.hero_service import HeroService
 
 
@@ -28,3 +29,12 @@ def get_hero_service(repo: HeroRepoDep) -> HeroService:
 
 
 HeroServiceDep = Annotated[HeroService, Depends(get_hero_service)]
+
+
+def get_deepseek_service() -> DeepSeekService:
+    from app.db import get_settings
+
+    return DeepSeekService(settings=get_settings())
+
+
+DeepSeekServiceDep = Annotated[DeepSeekService, Depends(get_deepseek_service)]

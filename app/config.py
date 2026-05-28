@@ -17,6 +17,12 @@ class Settings(BaseSettings):
     postgres_port: int = 5432
     postgres_db: str | None = None
 
+    # DeepSeek API settings
+    deepseek_api_key: str | None = None
+    deepseek_base_url: str = "https://api.deepseek.com"
+    deepseek_model: str = "deepseek-v4-flash"
+    deepseek_timeout_seconds: float = 60.0
+
     # read env vars from .env file
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
