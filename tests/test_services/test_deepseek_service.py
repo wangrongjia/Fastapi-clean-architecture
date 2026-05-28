@@ -88,3 +88,16 @@ def test_chat_sends_request_and_returns_assistant_response(mocker):
     assert result.content == "Hi there!"
     assert result.finish_reason == "stop"
     assert result.usage == {"total_tokens": 12}
+
+
+def test_stream_payload_includes_usage_option():
+    settings = Settings(deepseek_api_key="test-key")
+    service = DeepSeekService(settings=settings)
+    request = DeepSeekChatRequest(
+        messages=[DeepSeekChatMessage(role="user", content="Hello")]
+    )
+
+    payload = service._build_payload(request, stream=True)
+
+    assert payload["stream"] is True
+    assert payload["stream_options"] == {"include_usage": True}

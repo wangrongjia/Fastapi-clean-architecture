@@ -1,3 +1,5 @@
+import json
+from collections.abc import AsyncIterator
 from typing import Any
 
 import httpx
@@ -18,17 +20,31 @@ class DeepSeekService:
                 detail="DEEPSEEK_API_KEY is not configured",
             )
 
-        payload = self._build_payload(chat_request)
+        payload = self._build_payload(chat_request, stream=False)
         data = await self._send_chat_request(payload)
         return self._parse_chat_response(data)
 
-    def _build_payload(self, chat_request: DeepSeekChatRequest) -> dict[str, Any]:
+    def stream_chat(self, chat_request: DeepSeekChatRequest) -> AsyncIterator[str]:
+        if not self.settings.deepseek_api_key:
+            raise HTTPException(
+                status_code=500,
+                detail="DEEPSEEK_API_KEY is not configured",
+            )
+
+        payload = self._build_payload(chat_request, stream=True)
+        return self._stream_chat_request(payload)
+
+    def _build_payload(
+        self,
+        chat_request: DeepSeekChatRequest,
+        stream: bool,
+    ) -> dict[str, Any]:
         payload: dict[str, Any] = {
             "model": chat_request.model or self.settings.deepseek_model,
             "messages": [
                 message.model_dump() for message in chat_request.messages
             ],
-            "stream": False,
+            "stream": stream,
         }
 
         if chat_request.max_tokens is not None:
@@ -41,21 +57,21 @@ class DeepSeekService:
             }
         if chat_request.reasoning_effort is not None:
             payload["reasoning_effort"] = chat_request.reasoning_effort
+        if stream:
+            payload["stream_options"] = {"include_usage": True}
 
         return payload
 
     async def _send_chat_request(self, payload: dict[str, Any]) -> dict[str, Any]:
-        url = f"{self.settings.deepseek_base_url.rstrip('/')}/chat/completions"
-        headers = {
-            "Authorization": f"Bearer {self.settings.deepseek_api_key}",
-            "Content-Type": "application/json",
-        }
-
         try:
             async with httpx.AsyncClient(
                 timeout=self.settings.deepseek_timeout_seconds
             ) as client:
-                response = await client.post(url, json=payload, headers=headers)
+                response = await client.post(
+                    self._chat_url(),
+                    json=payload,
+                    headers=self._headers(),
+                )
                 response.raise_for_status()
                 return response.json()
         except httpx.HTTPStatusError as exc:
@@ -79,6 +95,32 @@ class DeepSeekService:
                 status_code=502,
                 detail="DeepSeek API returned invalid JSON",
             ) from exc
+
+    async def _stream_chat_request(
+        self,
+        payload: dict[str, Any],
+    ) -> AsyncIterator[str]:
+        try:
+            async with httpx.AsyncClient(
+                timeout=self.settings.deepseek_timeout_seconds
+            ) as client:
+                async with client.stream(
+                    "POST",
+                    self._chat_url(),
+                    json=payload,
+                    headers=self._headers(),
+                ) as response:
+                    response.raise_for_status()
+                    async for chunk in response.aiter_text():
+                        if chunk:
+                            yield chunk
+        except httpx.HTTPStatusError as exc:
+            detail = self._extract_error_detail(exc.response)
+            yield self._format_sse_error(f"DeepSeek API error: {detail}")
+        except httpx.TimeoutException:
+            yield self._format_sse_error("DeepSeek API request timed out")
+        except httpx.RequestError as exc:
+            yield self._format_sse_error(f"DeepSeek API request failed: {exc}")
 
     def _parse_chat_response(self, data: dict[str, Any]) -> DeepSeekChatResponse:
         choices = data.get("choices") or []
@@ -117,3 +159,16 @@ class DeepSeekService:
         if isinstance(error, dict):
             return str(error.get("message") or error)
         return str(data)
+
+    def _chat_url(self) -> str:
+        return f"{self.settings.deepseek_base_url.rstrip('/')}/chat/completions"
+
+    def _headers(self) -> dict[str, str]:
+        return {
+            "Authorization": f"Bearer {self.settings.deepseek_api_key}",
+            "Content-Type": "application/json",
+        }
+
+    def _format_sse_error(self, detail: str) -> str:
+        data = json.dumps({"detail": detail}, ensure_ascii=False)
+        return f"event: error\ndata: {data}\n\n"

@@ -53,3 +53,21 @@ Content-Type: application/json
   ],
   "thinking_enabled": false
 }
+
+# The stream response includes a final usage chunk before data: [DONE]
+# because the server sends stream_options.include_usage=true.
+
+### Stream chat with DeepSeek
+POST http://localhost:8000/chat/deepseek/stream HTTP/1.1
+Content-Type: application/json
+Accept: text/event-stream
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "用三句话介绍 FastAPI。"
+    }
+  ],
+  "thinking_enabled": false
+}

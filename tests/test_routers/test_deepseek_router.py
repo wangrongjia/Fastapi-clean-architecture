@@ -15,6 +15,10 @@ class FakeDeepSeekService:
             usage={"total_tokens": 8},
         )
 
+    async def stream_chat(self, chat_request):
+        yield 'data: {"choices":[{"delta":{"content":"Hello"}}]}\n\n'
+        yield "data: [DONE]\n\n"
+
 
 def test_chat_with_deepseek(client: TestClient):
     app.dependency_overrides[get_deepseek_service] = lambda: FakeDeepSeekService()
@@ -33,3 +37,19 @@ def test_chat_with_deepseek(client: TestClient):
     assert data["content"] == "你好！"
     assert data["finish_reason"] == "stop"
     assert data["usage"] == {"total_tokens": 8}
+
+
+def test_stream_chat_with_deepseek(client: TestClient):
+    app.dependency_overrides[get_deepseek_service] = lambda: FakeDeepSeekService()
+
+    with client.stream(
+        "POST",
+        "/chat/deepseek/stream",
+        json={"messages": [{"role": "user", "content": "Hello"}]},
+    ) as response:
+        data = response.read().decode()
+
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/event-stream")
+    assert 'data: {"choices":[{"delta":{"content":"Hello"}}]}' in data
+    assert "data: [DONE]" in data
