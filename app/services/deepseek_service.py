@@ -51,6 +51,8 @@ class DeepSeekService:
             payload["max_tokens"] = chat_request.max_tokens
         if chat_request.temperature is not None:
             payload["temperature"] = chat_request.temperature
+        if chat_request.response_format is not None:
+            payload["response_format"] = chat_request.response_format
         if chat_request.thinking_enabled is not None:
             payload["thinking"] = {
                 "type": "enabled" if chat_request.thinking_enabled else "disabled"

@@ -110,7 +110,7 @@ There are still a couple of things I want to do (like refactoring and adding new
 ### Locally
 
 ```bash
-uv run fastapi dev app/main.py
+uv run fastapi dev app/main.py --port 8083
 
 # OR
 
@@ -125,7 +125,7 @@ docker-compose up --build
 
 ## Testing the API
 
-- FastAPI's Swagger UI: http://localhost:8000/docs
+- FastAPI's Swagger UI: http://localhost:8083/docs
 
 OR
 

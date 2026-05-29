@@ -8,6 +8,7 @@ from app.repositories.hero_repository import HeroRepository
 from app.services.deepseek_service import DeepSeekService
 from app.services.hero_service import HeroService
 from app.services.openrouter_service import OpenRouterService
+from app.services.recruitment_service import RecruitmentService
 
 
 def get_session():
@@ -48,3 +49,19 @@ def get_openrouter_service() -> OpenRouterService:
 
 
 OpenRouterServiceDep = Annotated[OpenRouterService, Depends(get_openrouter_service)]
+
+
+def get_recruitment_service(
+    deepseek_service: DeepSeekServiceDep,
+    openrouter_service: OpenRouterServiceDep,
+) -> RecruitmentService:
+    return RecruitmentService(
+        deepseek_service=deepseek_service,
+        openrouter_service=openrouter_service,
+    )
+
+
+RecruitmentServiceDep = Annotated[
+    RecruitmentService,
+    Depends(get_recruitment_service),
+]

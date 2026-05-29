@@ -16,6 +16,6 @@ RUN uv sync --frozen --no-cache
 COPY . .
 
 # Run the application
-# CMD ["/fastapi-architecture-dkr/.venv/bin/fastapi", "run", "app/main.py", "--port", "8000", "--host", "0.0.0.0"]
-CMD ["uv", "run", "fastapi", "run", "app/main.py", "--port", "8000", "--host", "0.0.0.0"]
-# CMD ["uv", "run", "uvicorn", "app.main:app", "--port", "8000", "--host", "0.0.0.0"]
+# CMD ["/fastapi-architecture-dkr/.venv/bin/fastapi", "run", "app/main.py", "--port", "8083", "--host", "0.0.0.0"]
+CMD ["uv", "run", "fastapi", "run", "app/main.py", "--port", "8083", "--host", "0.0.0.0"]
+# CMD ["uv", "run", "uvicorn", "app.main:app", "--port", "8083", "--host", "0.0.0.0"]

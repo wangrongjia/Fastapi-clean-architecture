@@ -20,4 +20,4 @@ fi
 
 # Run FastAPI app
 echo "Starting FastAPI app..."
-uv run fastapi dev app/main.py
+uv run fastapi dev app/main.py --port 8083

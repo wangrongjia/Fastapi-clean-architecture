@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     # First: Create these variables in .env file
     # Check with this:
     db_engine: str = "sqlite"  # default db; (sqlite/ postgres)
+    port: int = 8083
 
     # sqlite settings (will be read from .env file)
     sqlite_file_name: str = "database.db"

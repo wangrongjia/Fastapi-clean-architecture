@@ -1,9 +1,9 @@
-# Test APIs
-# Using REST Client vscode extension - allows you to send HTTP request 
+﻿# Test APIs
+# Using REST Client vscode extension - allows you to send HTTP request
 # and view the response in Visual Studio Code directly.
 
 ### POST Request
-POST http://localhost:8000/heroes HTTP/1.1
+POST http://localhost:8083/heroes HTTP/1.1
 Content-Type: application/json
 
 {
@@ -14,30 +14,29 @@ Content-Type: application/json
 }
 
 ### GET many
-GET http://localhost:8000/heroes?offset=0&limit=100 HTTP/1.1
+GET http://localhost:8083/heroes?offset=0&limit=100 HTTP/1.1
 
-### GET many - curl request (copied from http://127.0.0.1:8000/docs#/)
+### GET many - curl request (copied from http://127.0.0.1:8083/docs#/)
 curl -X 'GET' \
-  'http://127.0.0.1:8000/heroes/?offset=0&limit=100' \
+  'http://127.0.0.1:8083/heroes/?offset=0&limit=100' \
   -H 'accept: application/json'
 
 ### GET one
-GET http://localhost:8000/heroes/3 HTTP/1.1
+GET http://localhost:8083/heroes/3 HTTP/1.1
 
 ### PATCH - update a hero
-PATCH http://localhost:8000/heroes/2 HTTP/1.1
+PATCH http://localhost:8083/heroes/2 HTTP/1.1
 Content-Type: application/json
 
 {
   "age": 22
 }
 
-
 ### DELETE a hero
-DELETE http://localhost:8000/heroes/1 HTTP/1.1
+DELETE http://localhost:8083/heroes/1 HTTP/1.1
 
 ### Chat with DeepSeek
-POST http://localhost:8000/chat/deepseek HTTP/1.1
+POST http://localhost:8083/chat/deepseek HTTP/1.1
 Content-Type: application/json
 
 {
@@ -48,14 +47,14 @@ Content-Type: application/json
     },
     {
       "role": "user",
-      "content": "你好，简单介绍一下 FastAPI。"
+      "content": "Briefly introduce FastAPI."
     }
   ],
   "thinking_enabled": false
 }
 
 ### Chat with OpenRouter gpt-oss-120b free
-POST http://localhost:8000/chat/openrouter HTTP/1.1
+POST http://localhost:8083/chat/openrouter HTTP/1.1
 Content-Type: application/json
 
 {
@@ -74,7 +73,7 @@ Content-Type: application/json
 }
 
 ### Chat with OpenRouter Claude 3 Haiku
-POST http://localhost:8000/chat/openrouter/claude HTTP/1.1
+POST http://localhost:8083/chat/openrouter/claude HTTP/1.1
 Content-Type: application/json
 
 {
@@ -92,8 +91,35 @@ Content-Type: application/json
   "max_tokens": 128
 }
 
+### Parse recruitment text with DeepSeek
+POST http://localhost:8083/recruitment/parse HTTP/1.1
+Content-Type: application/json
+
+{
+  "provider": "deepseek",
+  "text": "ByteDance is hiring a Python Backend Engineer to build FastAPI services and PostgreSQL schemas. Requirements: 3+ years of Python backend experience, FastAPI, SQLAlchemy, Redis, and Docker. Salary: CNY 25k-40k/month. Location: Beijing."
+}
+
+### Parse recruitment text with OpenRouter GPT
+POST http://localhost:8083/recruitment/parse HTTP/1.1
+Content-Type: application/json
+
+{
+  "provider": "openrouter_gpt",
+  "text": "Acme AI is hiring a Senior Backend Engineer. Requirements: 5+ years of Python, FastAPI, PostgreSQL, Redis, and Docker experience. Salary: USD 120k-160k/year."
+}
+
+### Parse recruitment text with OpenRouter Claude
+POST http://localhost:8083/recruitment/parse HTTP/1.1
+Content-Type: application/json
+
+{
+  "provider": "openrouter_claude",
+  "text": "An internet company is hiring a Frontend Engineer. Requirements: React, TypeScript, Vite, and 2-4 years of web development experience. Salary: CNY 18k-28k/month."
+}
+
 ### Stream chat with OpenRouter Claude 3 Haiku
-POST http://localhost:8000/chat/openrouter/claude/stream HTTP/1.1
+POST http://localhost:8083/chat/openrouter/claude/stream HTTP/1.1
 Content-Type: application/json
 Accept: text/event-stream
 
@@ -109,7 +135,7 @@ Accept: text/event-stream
 }
 
 ### Stream chat with OpenRouter gpt-oss-120b free
-POST http://localhost:8000/chat/openrouter/stream HTTP/1.1
+POST http://localhost:8083/chat/openrouter/stream HTTP/1.1
 Content-Type: application/json
 Accept: text/event-stream
 
@@ -128,7 +154,7 @@ Accept: text/event-stream
 # because the server sends stream_options.include_usage=true.
 
 ### Stream chat with DeepSeek
-POST http://localhost:8000/chat/deepseek/stream HTTP/1.1
+POST http://localhost:8083/chat/deepseek/stream HTTP/1.1
 Content-Type: application/json
 Accept: text/event-stream
 
@@ -136,7 +162,7 @@ Accept: text/event-stream
   "messages": [
     {
       "role": "user",
-      "content": "用三句话介绍 FastAPI。"
+      "content": "Introduce FastAPI in three sentences."
     }
   ],
   "thinking_enabled": false

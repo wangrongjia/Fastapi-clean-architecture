@@ -13,6 +13,7 @@ class DeepSeekChatRequest(BaseModel):
     model: str | None = None
     max_tokens: int | None = Field(default=None, gt=0)
     temperature: float | None = Field(default=None, ge=0, le=2)
+    response_format: dict[str, Any] | None = None
     thinking_enabled: bool | None = None
     reasoning_effort: Literal["high", "max"] | None = None
 
