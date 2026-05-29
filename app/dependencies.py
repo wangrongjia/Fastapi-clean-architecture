@@ -7,6 +7,7 @@ from app.db import engine
 from app.repositories.hero_repository import HeroRepository
 from app.services.deepseek_service import DeepSeekService
 from app.services.hero_service import HeroService
+from app.services.openrouter_service import OpenRouterService
 
 
 def get_session():
@@ -38,3 +39,12 @@ def get_deepseek_service() -> DeepSeekService:
 
 
 DeepSeekServiceDep = Annotated[DeepSeekService, Depends(get_deepseek_service)]
+
+
+def get_openrouter_service() -> OpenRouterService:
+    from app.db import get_settings
+
+    return OpenRouterService(settings=get_settings())
+
+
+OpenRouterServiceDep = Annotated[OpenRouterService, Depends(get_openrouter_service)]

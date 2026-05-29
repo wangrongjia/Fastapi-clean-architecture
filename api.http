@@ -54,6 +54,76 @@ Content-Type: application/json
   "thinking_enabled": false
 }
 
+### Chat with OpenRouter gpt-oss-120b free
+POST http://localhost:8000/chat/openrouter HTTP/1.1
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "Explain FastAPI in two short sentences."
+    }
+  ],
+  "temperature": 0.7,
+  "reasoning_effort": "low"
+}
+
+### Chat with OpenRouter Claude 3 Haiku
+POST http://localhost:8000/chat/openrouter/claude HTTP/1.1
+Content-Type: application/json
+
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "Explain FastAPI in two short sentences."
+    }
+  ],
+  "temperature": 0.7,
+  "max_tokens": 128
+}
+
+### Stream chat with OpenRouter Claude 3 Haiku
+POST http://localhost:8000/chat/openrouter/claude/stream HTTP/1.1
+Content-Type: application/json
+Accept: text/event-stream
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "Explain FastAPI in two short sentences."
+    }
+  ],
+  "temperature": 0.7,
+  "max_tokens": 128
+}
+
+### Stream chat with OpenRouter gpt-oss-120b free
+POST http://localhost:8000/chat/openrouter/stream HTTP/1.1
+Content-Type: application/json
+Accept: text/event-stream
+
+{
+  "messages": [
+    {
+      "role": "user",
+      "content": "Explain FastAPI in two short sentences."
+    }
+  ],
+  "temperature": 0.7,
+  "reasoning_effort": "low"
+}
+
 # The stream response includes a final usage chunk before data: [DONE]
 # because the server sends stream_options.include_usage=true.
 
